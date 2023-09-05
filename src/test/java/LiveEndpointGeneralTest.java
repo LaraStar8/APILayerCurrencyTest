@@ -1,6 +1,12 @@
 import io.restassured.response.Response;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
 
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
@@ -48,5 +54,17 @@ public class LiveEndpointGeneralTest {
     public void termsAndPrivacyPolicyTest() {
         response.then().body("terms", notNullValue());
         response.then().body("privacy", notNullValue());
+    }
+    @Test
+    public void timeStampTest(){
+        String expected = LocalDate.now().toString();
+        //get timestamp from response
+        Integer actualMs = response.path("timestamp");
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        //get Date from the timestamp in request
+        Date date2 = new Date((long)actualMs*1000);
+        //format date from response to match expected String date
+        String actual = format.format(date2.getTime());
+        Assertions.assertEquals(expected, actual);
     }
 }
